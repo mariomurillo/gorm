@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"reflect"
@@ -64,7 +65,19 @@ func queryCallback(scope *Scope) {
 			scope.SQL += addExtraSpaceIfExist(fmt.Sprint(str))
 		}
 
-		if rows, err := scope.SQLDB().Query(scope.SQL, scope.SQLVars...); scope.Err(err) == nil {
+		var rows *sql.Rows
+		var err error
+
+		if scope.ctx != nil {
+
+			rows, err = scope.SQLDB().QueryContext(scope.ctx, scope.SQL, scope.SQLVars...)
+
+		} else {
+			rows, err = scope.SQLDB().Query(scope.SQL, scope.SQLVars...)
+		}
+
+
+		if scope.Err(err) == nil {
 			defer rows.Close()
 
 			columns, _ := rows.Columns()

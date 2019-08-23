@@ -361,6 +361,11 @@ func (s *DB) Scan(dest interface{}) *DB {
 	return s.NewScope(s.Value).Set("gorm:query_destination", dest).callCallbacks(s.parent.callbacks.queries).db
 }
 
+// Scan scan value to a struct
+func (s *DB) ScanWithContext(ctx context.Context, dest interface{}) *DB {
+	return s.NewScope(s.Value).Set("gorm:query_destination", dest).callCallbacksWithContext(ctx, s.parent.callbacks.queries).db
+}
+
 // Row return `*sql.Row` with given conditions
 func (s *DB) Row() *sql.Row {
 	return s.NewScope(s.Value).row()
